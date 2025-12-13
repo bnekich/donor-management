@@ -24,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
 
     Route::get('donors', Donors\Index::class)->name('donors.index');
+    Route::get('donors/create', Donors\Create::class)->name('donors.create');
+    Route::get('donors/{donor}/edit', Donors\Edit::class)->name('donors.edit');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(

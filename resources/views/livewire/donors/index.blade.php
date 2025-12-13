@@ -1,6 +1,9 @@
 <section>
     <x-alerts.success />
 
+    <div class="flex flex-grow gap-x-4 mb-4">
+        <flux:button href="{{ route('donors.create') }}" variant="filled">{{ __('Add Donor') }}</flux:button>
+    </div>
     <div class="relative overflow-x-auto bg-neutral-primary-soft shadow-xs rounded-base border border-default">
         <table class="w-full text-sm text-left rtl:text-right text-body">
             <thead class="text-sm text-body bg-neutral-secondary-soft border-b rounded-base border-default">
@@ -32,7 +35,8 @@
                             {{ $donor->email }}
                         </td>
                         <td class="px-6 py-4 space-x=2">
-                            <flux:button href="#" variant="filled">{{ __('Edit') }}</flux:button>
+                            <flux:button href="{{ route('donors.edit', $donor) }}" variant="filled">{{ __('Edit') }}
+                            </flux:button>
                             <flux:button wire:confirm="{{ __('Are you sure you want to delete this donor?') }}"
                                 wire:click="delete({{ $donor->id }})" variant="danger" type="button">
                                 {{ __('Delete') }}</flux:button>
