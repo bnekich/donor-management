@@ -36,4 +36,9 @@ class Donor extends Model implements HasMedia
         }
         return null;
     }
+
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'donors_campaigns');
+    }
 }
