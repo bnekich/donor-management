@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 use App\Models\Donor;
 use Livewire\WithFileUploads;
+use App\Models\Campaign;
 
 class Edit extends Component
 {
@@ -23,18 +24,24 @@ class Edit extends Component
     public ?string $start_date = null;
     #[Validate('nullable|file|max:10240')]
     public $media; // Max 10MB
+    #[Validate([
+        'selectedCampaigns'   => ['nullable', 'array'],
+        'selectedCampaigns.*' => ['exists:campaigns,id'],
+    ])]
+    public array $selectedCampaigns = [];
 
     public Donor $donor;
 
     public function mount(Donor $donor): void
     {
         $this->donor = $donor;
-        $this->donor->load('media');
+        $this->donor->load('media', 'campaigns');
         $this->first_name = $donor->first_name;
         $this->last_name = $donor->last_name;
         $this->email = $donor->email;
         $this->phone_number = $donor->phone_number;
         $this->start_date = $donor->start_date?->format('Y-m-d');
+        $this->selectedCampaigns = $donor->campaigns->pluck('id')->toArray();
     }
 
     public function save(): void
@@ -54,6 +61,8 @@ class Edit extends Component
             $this->donor->addMedia($this->media)->toMediaCollection();
         }
 
+        $this->donor->campaigns()->sync($this->selectedCampaigns ?? []);
+
         session()->flash('success', 'Donor successfully updated.');
 
         $this->redirectRoute('donors.index', navigate: true);
@@ -61,6 +70,6 @@ class Edit extends Component
 
     public function render()
     {
-        return view('livewire.donors.edit');
+        return view('livewire.donors.edit', ['campaigns' => Campaign::where('is_active', true)->orderBy('name')->get()]);
     }
 }

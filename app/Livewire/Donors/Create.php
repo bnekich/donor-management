@@ -6,6 +6,7 @@ use App\Models\Donor;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
+use App\Models\Campaign;
 
 class Create extends Component
 {
@@ -40,6 +41,8 @@ class Create extends Component
             $donor->addMedia($this->media)->toMediaCollection();
         }
 
+        $donor->campaigns()->sync($this->selectedCampaigns ?? []);
+
         session()->flash('success', 'Donor successfully added.');
 
         $this->redirectRoute('donors.index', navigate: true);
@@ -47,6 +50,6 @@ class Create extends Component
 
     public function render()
     {
-        return view('livewire.donors.create');
+        return view('livewire.donors.create', ['campaigns' => Campaign::where('is_active', true)->orderBy('name')->get()]);
     }
 }
