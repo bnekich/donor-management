@@ -18,6 +18,12 @@
                         Email
                     </th>
                     <th scope="col" class="px-6 py-3 font-medium">
+                        Phone Number
+                    </th>
+                    <th scope="col" class="px-6 py-3 font-medium">
+                        Start Date
+                    </th>
+                    <th scope="col" class="px-6 py-3 font-medium">
                         Action
                     </th>
                 </tr>
@@ -33,6 +39,12 @@
                         </td>
                         <td class="px-6 py-4 font-medium">
                             {{ $donor->email }}
+                        </td>
+                        <td class="px-6 py-4 font-medium">
+                            {{ $donor->phone_number }}
+                        </td>
+                        <td class="px-6 py-4 font-medium">
+                            {{ $donor->start_date?->format('M d, Y') }}
                         </td>
                         <td class="px-6 py-4 space-x=2">
                             <flux:button href="{{ route('donors.edit', $donor) }}" variant="filled">{{ __('Edit') }}

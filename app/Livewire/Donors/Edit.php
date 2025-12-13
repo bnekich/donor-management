@@ -14,8 +14,10 @@ class Edit extends Component
     public string $last_name = '';
     #[Validate('required|email|max:255')]
     public string $email = '';
-    #[Validate('required|string|max:20')]
-    public string $phone_number = '';
+    #[Validate('nullable|string|max:20')]
+    public ?string $phone_number;
+    #[Validate('nullable|date')]
+    public ?string $start_date = null;
 
     public Donor $donor;
 
@@ -26,6 +28,7 @@ class Edit extends Component
         $this->last_name = $donor->last_name;
         $this->email = $donor->email;
         $this->phone_number = $donor->phone_number;
+        $this->start_date = $donor->start_date?->format('Y-m-d');
     }
 
     public function save(): void
@@ -37,6 +40,7 @@ class Edit extends Component
             'last_name' => $this->last_name,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
+            'start_date' => $this->start_date,
         ]);
 
         session()->flash('success', 'Donor successfully updated.');

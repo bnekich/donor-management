@@ -14,5 +14,13 @@ class Donor extends Model
         'last_name',
         'email',
         'phone_number',
+        'start_date',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date',
+        ];
+    }
 }
