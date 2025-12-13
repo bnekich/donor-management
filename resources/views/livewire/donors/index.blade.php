@@ -24,6 +24,9 @@
                         Start Date
                     </th>
                     <th scope="col" class="px-6 py-3 font-medium">
+                        File
+                    </th>
+                    <th scope="col" class="px-6 py-3 font-medium">
                         Action
                     </th>
                 </tr>
@@ -46,8 +49,17 @@
                         <td class="px-6 py-4 font-medium">
                             {{ $donor->start_date?->format('M d, Y') }}
                         </td>
+                        <td class="px-6 py-4">
+                            @if ($donor->media_file)
+                                <a href="{{ $donor->media_file->original_url }}" target="_blank">
+                                    <img src="{{ $donor->media_file->original_url }}" alt="{{ $donor->last_name }}"
+                                        class="w-8 h-8" />
+                                </a>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 space-x=2">
-                            <flux:button href="{{ route('donors.edit', $donor) }}" variant="filled">{{ __('Edit') }}
+                            <flux:button href="{{ route('donors.edit', $donor) }}" variant="filled">
+                                {{ __('Edit') }}
                             </flux:button>
                             <flux:button wire:confirm="{{ __('Are you sure you want to delete this donor?') }}"
                                 wire:click="delete({{ $donor->id }})" variant="danger" type="button">

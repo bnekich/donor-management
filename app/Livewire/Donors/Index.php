@@ -18,6 +18,6 @@ class Index extends Component
 
     public function render()
     {
-        return view('livewire.donors.index', ['donors' => Donor::orderBy('last_name')->paginate(5)]);
+        return view('livewire.donors.index', ['donors' => Donor::with('media')->orderBy('last_name')->paginate(5)]);
     }
 }

@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Donor extends Model
+class Donor extends Model implements HasMedia
 {
     /** @use HasFactory<\Database\Factories\DonorFactory> */
     use HasFactory;
+    use InteractsWithMedia;
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -17,10 +21,19 @@ class Donor extends Model
         'start_date',
     ];
 
+    protected $appends = ['mediaFile'];
+
     protected function casts(): array
     {
         return [
             'start_date' => 'date',
         ];
+    }
+    public function getMediaFileAttribute()
+    {
+        if ($this->relationLoaded('media')) {
+            return $this->getFirstMedia();
+        }
+        return null;
     }
 }

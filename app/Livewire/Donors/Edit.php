@@ -5,9 +5,12 @@ namespace App\Livewire\Donors;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use App\Models\Donor;
+use Livewire\WithFileUploads;
 
 class Edit extends Component
 {
+    use WithFileUploads;
+
     #[Validate('required|string|max:255')]
     public string $first_name = '';
     #[Validate('required|string|max:255')]
@@ -18,12 +21,15 @@ class Edit extends Component
     public ?string $phone_number;
     #[Validate('nullable|date')]
     public ?string $start_date = null;
+    #[Validate('nullable|file|max:10240')]
+    public $media; // Max 10MB
 
     public Donor $donor;
 
     public function mount(Donor $donor): void
     {
         $this->donor = $donor;
+        $this->donor->load('media');
         $this->first_name = $donor->first_name;
         $this->last_name = $donor->last_name;
         $this->email = $donor->email;
@@ -42,6 +48,11 @@ class Edit extends Component
             'phone_number' => $this->phone_number,
             'start_date' => $this->start_date,
         ]);
+
+        if ($this->media) {
+            $this->donor->getFirstMedia()?->delete();
+            $this->donor->addMedia($this->media)->toMediaCollection();
+        }
 
         session()->flash('success', 'Donor successfully updated.');
 
