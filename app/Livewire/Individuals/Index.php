@@ -17,7 +17,7 @@ class Index extends Component
     public function render()
     {
         return view('livewire.individuals.index', [
-            'individuals' => Individual::paginate(10),
+            'individuals' => Individual::orderBy('last_name', 'asc')->paginate(10),
         ]);
     }
 }

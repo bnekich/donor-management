@@ -19,9 +19,9 @@ class PledgeFactory extends Factory
             'pledge_date' => $this->faker->dateTimeThisYear,
             'due_date' => $this->faker->dateTimeThisYear('+1 year'),
             'status' => $this->faker->randomElement(['pending', 'fulfilled', 'cancelled']),
-            'campaign_id' => \App\Models\Campaign::factory(),
-            'chapter_id' => \App\Models\Chapter::factory(),
-            'account_id' => \App\Models\ChartOfAccount::factory(),
+            'campaign_id' => fake()->numberBetween(1, 9),
+            'chapter_id' => fake()->numberBetween(1, 9),
+            'account_id' => fake()->numberBetween(1, 9),
             'notes' => $this->faker->paragraph,
         ];
     }

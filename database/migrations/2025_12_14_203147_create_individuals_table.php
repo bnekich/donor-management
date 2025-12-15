@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('address_line1')->nullable();
             $table->string('address_line2')->nullable();
             $table->string('city')->nullable();
+            $table->string('county')->nullable();
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
             $table->string('country')->default('USA');

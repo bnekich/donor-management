@@ -1,9 +1,10 @@
 <section>
     <x-alerts.success />
 
-    {{-- <div class="flex flex-grow gap-x-4 mb-4">
-        <flux:button href="{{ route('donors.create') }}" variant="filled">{{ __('Add Donor') }}</flux:button>
-    </div> --}}
+    <div class="flex flex-grow gap-x-4 mb-4">
+        <flux:button href="{{ route('individuals.create') }}" variant="filled">{{ __('Add Individual Donor') }}
+        </flux:button>
+    </div>
 
     {{-- <div class="mb-4 flex flex-row justify-end gap-x-2 w-full">
         <ul

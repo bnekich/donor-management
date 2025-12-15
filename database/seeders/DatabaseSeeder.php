@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\IndividualSeeder;
@@ -15,12 +15,12 @@ use Database\Seeders\DonationSeeder;
 use Database\Seeders\NoteSeeder;
 use Database\Seeders\FundingRequestSeeder;
 use Database\Seeders\RelationshipSeeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
+    use WithoutModelEvents;
+
     public function run(): void
     {
         $this->call([
@@ -37,8 +37,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Development User',
+            'email' => 'dev@example.com',
+            'password' => Hash::make('password'),
         ]);
     }
 }

@@ -25,7 +25,7 @@ class Index extends Component
     public function render(): View
     {
         return view('livewire.campaigns.index', [
-            'campaigns' => Campaign::paginate(10),
+            'campaigns' => Campaign::orderBy('name', 'asc')->paginate(10),
         ]);
     }
 }

@@ -10,6 +10,6 @@ class ChapterSeeder extends Seeder
 {
     public function run(): void
     {
-        Chapter::factory(5)->create();
+        Chapter::factory(10)->create();
     }
 }
