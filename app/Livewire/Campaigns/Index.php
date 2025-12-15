@@ -5,9 +5,12 @@ namespace App\Livewire\Campaigns;
 use Livewire\Component;
 use Illuminate\View\View;
 use App\Models\Campaign;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
+    use WithPagination;
+
     public function delete(int $id): void
     {
         $campaign = Campaign::findOrFail($id);
@@ -22,7 +25,7 @@ class Index extends Component
     public function render(): View
     {
         return view('livewire.campaigns.index', [
-            'campaigns' => Campaign::withCount('donors')->paginate(5),
+            'campaigns' => Campaign::paginate(10),
         ]);
     }
 }

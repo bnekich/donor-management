@@ -33,7 +33,7 @@ class Index extends Component
                     });
                 })
                 ->orderBy('last_name')
-                ->paginate(10),
+                ->paginate(5),
 
             'campaigns' => \App\Models\Campaign::where('is_active', true)->orderBy('name')->get(),
         ]);
