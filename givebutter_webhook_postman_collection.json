@@ -1,0 +1,44 @@
+{
+  "info": {
+    "name": "Donor Management API",
+    "description": "API for Donor Management System - Givebutter Webhook",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Givebutter Webhook",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transactions\": [\n    {\n      \"id\": \"txn_123456789\",\n      \"amount\": 50.00,\n      \"currency\": \"USD\",\n      \"status\": \"completed\",\n      \"donor\": {\n        \"name\": \"John Doe\",\n        \"email\": \"john.doe@example.com\"\n      },\n      \"campaign_id\": \"camp_987654321\",\n      \"created_at\": \"2025-12-23T10:00:00Z\"\n    },\n    {\n      \"id\": \"txn_987654321\",\n      \"amount\": 25.00,\n      \"currency\": \"USD\",\n      \"status\": \"completed\",\n      \"donor\": {\n        \"name\": \"Jane Smith\",\n        \"email\": \"jane.smith@example.com\"\n      },\n      \"campaign_id\": \"camp_123456789\",\n      \"created_at\": \"2025-12-23T11:00:00Z\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/givebutter/webhook",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "givebutter",
+            "webhook"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://stingray-app-o86dk.ondigitalocean.app",
+      "type": "string"
+    }
+  ]
+}
