@@ -9,9 +9,14 @@ return new class extends Migration {
     {
         Schema::create('donations', function (Blueprint $table) {
             $table->id();
+            $table->string('processor')->nullable(); // e.g., 'givebutter', 'stripe'
+            $table->string('processor_id')->nullable();
+            $table->string('reference_number')->nullable();
             $table->morphs('donor');
             $table->decimal('amount', 15, 2);
-            $table->date('date');
+            $table->decimal('processor_fee', 15, 2)->nullable();
+            $table->decimal('net_amount', 15, 2)->nullable();
+            $table->date('transaction_date');
             $table->string('payment_method'); // e.g., 'credit_card', 'check', 'direct'
             $table->string('transaction_id')->nullable();
             $table->foreignId('pledge_id')->nullable()->constrained()->onDelete('set null');
