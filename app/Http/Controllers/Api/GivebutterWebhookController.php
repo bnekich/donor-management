@@ -20,6 +20,21 @@ class GivebutterWebhookController extends Controller
             'payload' => $request->all(),
         ]);
 
+        // Validate webhook signature
+        $signature = $request->header('Signature');
+        $expectedSignature = config('services.givebutter.webhook_signature');
+
+        if ($signature !== $expectedSignature) {
+            Log::warning('Invalid Givebutter webhook signature', [
+                'received' => $signature,
+                'expected' => $expectedSignature,
+            ]);
+
+            return response()->json([
+                'message' => 'Invalid signature',
+            ], 401);
+        }
+
         // Validate the request
         $request->validate([
             'id' => 'required|string',

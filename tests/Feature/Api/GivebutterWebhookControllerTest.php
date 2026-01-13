@@ -3,7 +3,52 @@
 use App\Models\GivebutterTransaction;
 use Illuminate\Support\Facades\Log;
 
-test('successfully stores a new transaction from webhook', function () {
+$validSignature = 'nlNsmrvi8QOOZomnqdSvIfFukebqrtTwOkB3JbJtUzfGXt8lE8wQ99AMaxKeOXIPX2yg3Uroh4f6HzeqO6I7HBKVAICtkEBsE35n';
+
+test('rejects request with missing signature', function () {
+    $payload = [
+        'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
+        'event' => 'transaction.succeeded',
+        'data' => [
+            'id' => 'ZZPcHQfpqEigZhnK',
+        ],
+    ];
+
+    Log::shouldReceive('info')->once();
+    Log::shouldReceive('warning')->once();
+
+    /** @var \Tests\TestCase $this */
+    $response = $this->postJson('/api/givebutter/webhook', $payload);
+
+    $response->assertStatus(401)
+        ->assertJson([
+            'message' => 'Invalid signature',
+        ]);
+});
+
+test('rejects request with invalid signature', function () {
+    $payload = [
+        'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
+        'event' => 'transaction.succeeded',
+        'data' => [
+            'id' => 'ZZPcHQfpqEigZhnK',
+        ],
+    ];
+
+    Log::shouldReceive('info')->once();
+    Log::shouldReceive('warning')->once();
+
+    $response = $this->withHeaders([
+        'Signature' => 'invalid-signature',
+    ])->postJson('/api/givebutter/webhook', $payload);
+
+    $response->assertStatus(401)
+        ->assertJson([
+            'message' => 'Invalid signature',
+        ]);
+});
+
+test('successfully stores a new transaction from webhook', function () use ($validSignature) {
     $payload = [
         'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
         'event' => 'transaction.succeeded',
@@ -24,7 +69,9 @@ test('successfully stores a new transaction from webhook', function () {
     Log::shouldReceive('info')->twice();
     Log::shouldNotReceive('warning');
 
-    $response = $this->postJson('/api/givebutter/webhook', $payload);
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', $payload);
 
     $response->assertSuccessful()
         ->assertJson([
@@ -41,7 +88,7 @@ test('successfully stores a new transaction from webhook', function () {
         ->and($transaction->payload)->toBe($payload);
 });
 
-test('handles duplicate transaction gracefully', function () {
+test('handles duplicate transaction gracefully', function () use ($validSignature) {
     $existingTransaction = GivebutterTransaction::factory()->create([
         'givebutter_id' => 'ZZPcHQfpqEigZhnK',
         'status' => 'processed',
@@ -59,7 +106,9 @@ test('handles duplicate transaction gracefully', function () {
     Log::shouldReceive('info')->once();
     Log::shouldReceive('warning')->once();
 
-    $response = $this->postJson('/api/givebutter/webhook', $payload);
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', $payload);
 
     $response->assertSuccessful()
         ->assertJson([
@@ -72,27 +121,31 @@ test('handles duplicate transaction gracefully', function () {
     expect($count)->toBe(1);
 });
 
-test('validates required fields', function () {
-    $response = $this->postJson('/api/givebutter/webhook', []);
+test('validates required fields', function () use ($validSignature) {
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', []);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['id', 'event', 'data']);
 });
 
-test('validates data.id is required', function () {
+test('validates data.id is required', function () use ($validSignature) {
     $payload = [
         'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
         'event' => 'transaction.succeeded',
         'data' => [],
     ];
 
-    $response = $this->postJson('/api/givebutter/webhook', $payload);
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', $payload);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['data.id']);
 });
 
-test('sets status to failed for transaction.failed event', function () {
+test('sets status to failed for transaction.failed event', function () use ($validSignature) {
     $payload = [
         'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
         'event' => 'transaction.failed',
@@ -104,7 +157,9 @@ test('sets status to failed for transaction.failed event', function () {
 
     Log::shouldReceive('info')->twice();
 
-    $response = $this->postJson('/api/givebutter/webhook', $payload);
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', $payload);
 
     $response->assertSuccessful();
 
@@ -114,7 +169,7 @@ test('sets status to failed for transaction.failed event', function () {
         ->and($transaction->status)->toBe('failed');
 });
 
-test('sets status to pending for unknown event types', function () {
+test('sets status to pending for unknown event types', function () use ($validSignature) {
     $payload = [
         'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
         'event' => 'transaction.unknown',
@@ -126,7 +181,9 @@ test('sets status to pending for unknown event types', function () {
 
     Log::shouldReceive('info')->twice();
 
-    $response = $this->postJson('/api/givebutter/webhook', $payload);
+    $response = $this->withHeaders([
+        'Signature' => $validSignature,
+    ])->postJson('/api/givebutter/webhook', $payload);
 
     $response->assertSuccessful();
 
