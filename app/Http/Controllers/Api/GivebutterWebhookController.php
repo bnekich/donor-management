@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ProcessStagedTransaction;
 use App\Models\GivebutterTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -63,14 +64,15 @@ class GivebutterWebhookController extends Controller
         }
 
         // Determine status based on event type
+        // Only process successful transactions, others stay as pending/failed
         $status = match ($event) {
-            'transaction.succeeded' => 'processed',
+            'transaction.succeeded' => 'pending', // Will be processed by job
             'transaction.failed' => 'failed',
             default => 'pending',
         };
 
         // Store the transaction
-        GivebutterTransaction::create([
+        $transaction = GivebutterTransaction::create([
             'givebutter_id' => $transactionId,
             'payload' => $request->all(),
             'status' => $status,
@@ -82,6 +84,12 @@ class GivebutterWebhookController extends Controller
             'event' => $event,
             'status' => $status,
         ]);
+
+        // Dispatch job to process the transaction asynchronously
+        // Only process successful transactions
+        if ($event === 'transaction.succeeded') {
+            ProcessStagedTransaction::dispatch($transaction->id, 'givebutter');
+        }
 
         return response()->json([
             'message' => 'Webhook processed successfully',
