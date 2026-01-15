@@ -20,6 +20,12 @@ class DonationTransformer
      */
     public function transform(object $stagedTransaction, string $processor): ?Donation
     {
+        Log::debug('DonationTransformer::transform started', [
+            'processor' => $processor,
+            'transaction_id' => $stagedTransaction->id ?? null,
+            'payload_type' => gettype($stagedTransaction->payload ?? null),
+        ]);
+
         $extractor = $this->getExtractor($processor);
 
         if (! $extractor) {
@@ -32,13 +38,50 @@ class DonationTransformer
         }
 
         $payload = $stagedTransaction->payload ?? [];
-        $extractedData = $extractor->extract($payload);
+
+        if (empty($payload)) {
+            Log::error('Empty payload in staged transaction', [
+                'processor' => $processor,
+                'transaction_id' => $stagedTransaction->id ?? null,
+            ]);
+
+            return null;
+        }
+
+        try {
+            $extractedData = $extractor->extract($payload);
+
+            Log::debug('Data extracted from payload', [
+                'processor' => $processor,
+                'extracted_keys' => array_keys($extractedData),
+                'extracted_data' => $extractedData,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error during extraction', [
+                'processor' => $processor,
+                'transaction_id' => $stagedTransaction->id ?? null,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            throw $e;
+        }
 
         // Validate required fields
         if (! $this->validateExtractedData($extractedData)) {
-            Log::warning('Extracted data validation failed', [
+            $missing = [];
+            $required = ['processor', 'processor_id', 'amount', 'transaction_date', 'payment_method'];
+
+            foreach ($required as $field) {
+                if (! isset($extractedData[$field]) || $extractedData[$field] === null) {
+                    $missing[] = $field;
+                }
+            }
+
+            Log::error('Extracted data validation failed', [
                 'processor' => $processor,
                 'transaction_id' => $stagedTransaction->id ?? null,
+                'missing_fields' => $missing,
                 'extracted_data' => $extractedData,
             ]);
 
