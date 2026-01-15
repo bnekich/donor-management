@@ -12,7 +12,8 @@ return new class extends Migration {
             $table->string('processor')->nullable(); // e.g., 'givebutter', 'stripe'
             $table->string('processor_id')->nullable();
             $table->string('reference_number')->nullable();
-            $table->morphs('donor');
+            $table->unsignedBigInteger('donor_id')->nullable();
+            $table->string('donor_type')->nullable();
             $table->decimal('amount', 15, 2);
             $table->decimal('processor_fee', 15, 2)->nullable();
             $table->decimal('net_amount', 15, 2)->nullable();
