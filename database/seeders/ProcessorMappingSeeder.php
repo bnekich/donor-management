@@ -62,6 +62,31 @@ class ProcessorMappingSeeder extends Seeder
                 'is_required' => false,
                 'priority' => 6,
             ],
+            // Stripe mappings
+            [
+                'processor' => 'stripe',
+                'source_field' => 'id',
+                'target_field' => 'processor_id',
+                'transformation_type' => 'direct',
+                'is_required' => true,
+                'priority' => 1,
+            ],
+            [
+                'processor' => 'stripe',
+                'source_field' => 'description',
+                'target_field' => 'notes',
+                'transformation_type' => 'direct',
+                'is_required' => false,
+                'priority' => 2,
+            ],
+            [
+                'processor' => 'stripe',
+                'source_field' => 'metadata.notes',
+                'target_field' => 'notes',
+                'transformation_type' => 'direct',
+                'is_required' => false,
+                'priority' => 3,
+            ],
         ];
 
         foreach ($mappings as $mapping) {

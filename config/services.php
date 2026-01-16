@@ -39,4 +39,8 @@ return [
         'webhook_signature' => env('GIVEBUTTER_WEBHOOK_SIGNATURE', 'nlNsmrvi8QOOZomnqdSvIfFukebqrtTwOkB3JbJtUzfGXt8lE8wQ99AMaxKeOXIPX2yg3Uroh4f6HzeqO6I7HBKVAICtkEBsE35n'),
     ],
 
+    'stripe' => [
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 ];
