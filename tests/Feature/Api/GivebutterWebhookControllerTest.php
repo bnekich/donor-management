@@ -39,6 +39,7 @@ test('rejects request with invalid signature', function () {
     Log::shouldReceive('info')->once();
     Log::shouldReceive('warning')->once();
 
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => 'invalid-signature',
     ])->postJson('/api/givebutter/webhook', $payload);
@@ -73,6 +74,7 @@ test('successfully stores a new transaction from webhook', function () use ($val
     Log::shouldNotReceive('warning');
     Log::shouldNotReceive('error');
 
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', $payload);
@@ -113,7 +115,8 @@ test('handles duplicate transaction gracefully', function () use ($validSignatur
 
     Log::shouldReceive('info')->once();
     Log::shouldReceive('warning')->once();
-
+    
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', $payload);
@@ -130,6 +133,7 @@ test('handles duplicate transaction gracefully', function () use ($validSignatur
 });
 
 test('validates required fields', function () use ($validSignature) {
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', []);
@@ -145,6 +149,7 @@ test('validates data.id is required', function () use ($validSignature) {
         'data' => [],
     ];
 
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', $payload);
@@ -165,6 +170,7 @@ test('sets status to failed for transaction.failed event', function () use ($val
 
     Log::shouldReceive('info')->twice();
 
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', $payload);
@@ -189,6 +195,7 @@ test('sets status to pending for unknown event types', function () use ($validSi
 
     Log::shouldReceive('info')->twice();
 
+    /** @var \Tests\TestCase $this */ 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
     ])->postJson('/api/givebutter/webhook', $payload);
