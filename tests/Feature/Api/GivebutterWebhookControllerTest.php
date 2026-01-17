@@ -2,6 +2,7 @@
 
 use App\Models\GivebutterTransaction;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 
 $validSignature = 'nlNsmrvi8QOOZomnqdSvIfFukebqrtTwOkB3JbJtUzfGXt8lE8wQ99AMaxKeOXIPX2yg3Uroh4f6HzeqO6I7HBKVAICtkEBsE35n';
 
@@ -49,6 +50,8 @@ test('rejects request with invalid signature', function () {
 });
 
 test('successfully stores a new transaction from webhook', function () use ($validSignature) {
+    Queue::fake();
+
     $payload = [
         'id' => 'b7ee9e36-cc07-479c-a34b-b271c0a6fae7',
         'event' => 'transaction.succeeded',
@@ -68,6 +71,7 @@ test('successfully stores a new transaction from webhook', function () use ($val
 
     Log::shouldReceive('info')->twice();
     Log::shouldNotReceive('warning');
+    Log::shouldNotReceive('error');
 
     $response = $this->withHeaders([
         'Signature' => $validSignature,
@@ -84,8 +88,12 @@ test('successfully stores a new transaction from webhook', function () use ($val
 
     expect($transaction)->not->toBeNull()
         ->and($transaction->givebutter_id)->toBe('ZZPcHQfpqEigZhnK')
-        ->and($transaction->status)->toBe('processed')
+        ->and($transaction->status)->toBe('pending')
         ->and($transaction->payload)->toBe($payload);
+
+        Queue::assertPushed(\App\Jobs\ProcessStagedTransaction::class, function ($job) use ($transaction) {
+            return $job->transactionId === $transaction->id
+                && $job->processor === 'givebutter';        });
 });
 
 test('handles duplicate transaction gracefully', function () use ($validSignature) {
