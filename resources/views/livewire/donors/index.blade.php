@@ -36,10 +36,7 @@
                         Email
                     </th>
                     <th scope="col" class="px-6 py-3 font-medium">
-                        Phone Number
-                    </th>
-                    <th scope="col" class="px-6 py-3 font-medium">
-                        Start Date
+                        Phone
                     </th>
                     {{-- <th scope="col" class="px-6 py-3 font-medium">
                         File
@@ -56,24 +53,21 @@
                 @foreach ($donors as $donor)
                     <tr class="border-b hover:bg-neutral-secondary-soft/50">
                         <td class="px-6 py-4 font-medium">
-                            {{ $donor->first_name }}
+                            {{ $donor->donorDetail?->first_name ?? $donor->organization?->name ?? '-' }}
                         </td>
                         <td class="px-6 py-4 font-medium">
-                            {{ $donor->last_name }}
+                            {{ $donor->donorDetail?->last_name ?? '-' }}
                         </td>
                         <td class="px-6 py-4 font-medium">
                             {{ $donor->email }}
                         </td>
                         <td class="px-6 py-4 font-medium">
-                            {{ $donor->phone_number }}
-                        </td>
-                        <td class="px-6 py-4 font-medium">
-                            {{ $donor->start_date?->format('M d, Y') }}
+                            {{ $donor->phone }}
                         </td>
                         {{-- <td class="px-6 py-4">
                             @if ($donor->media_file)
                                 <a href="{{ $donor->media_file->original_url }}" target="_blank">
-                                    <img src="{{ $donor->media_file->original_url }}" alt="{{ $donor->last_name }}"
+                                    <img src="{{ $donor->media_file->original_url }}" alt="{{ $donor->name }}"
                                         class="w-8 h-8" />
                                 </a>
                             @endif

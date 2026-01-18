@@ -3,8 +3,8 @@
 namespace App\Services\Processors;
 
 use App\Models\Campaign;
-use App\Models\Individual;
-use App\Models\Organization;
+use App\Models\Donor;
+use App\Models\DonorDetail;
 
 /**
  * Extractor for Stripe webhook payloads.
@@ -102,13 +102,11 @@ class StripeProcessorExtractor extends ProcessorExtractor
             $donor = $this->findOrCreateDonorFromStripeCustomer($customerId, $objectData);
             if ($donor) {
                 $extracted['donor_id'] = $donor->id;
-                $extracted['donor_type'] = $donor::class;
             }
         } elseif (isset($objectData['customer_details'])) {
             $donor = $this->findOrCreateDonorFromCustomerDetails($objectData['customer_details']);
             if ($donor) {
                 $extracted['donor_id'] = $donor->id;
-                $extracted['donor_type'] = $donor::class;
             }
         }
 
@@ -155,7 +153,7 @@ class StripeProcessorExtractor extends ProcessorExtractor
      *
      * @param  array<string, mixed>  $objectData
      */
-    protected function findOrCreateDonorFromStripeCustomer(string $customerId, array $objectData): Individual|Organization|null
+    protected function findOrCreateDonorFromStripeCustomer(string $customerId, array $objectData): ?Donor
     {
         // Try to get email from various places in the object
         $email = $objectData['receipt_email']
@@ -167,25 +165,25 @@ class StripeProcessorExtractor extends ProcessorExtractor
             return null;
         }
 
-        // Try to find existing individual by email
-        $individual = Individual::where('email', $email)->first();
+        $donor = Donor::firstOrCreate(
+            ['email' => $email],
+            ['phone' => $objectData['billing_details']['phone'] ?? null]
+        );
 
-        if ($individual) {
-            return $individual;
+        if (! $donor->donorDetail) {
+            $name = $objectData['customer_details']['name']
+                ?? $objectData['billing_details']['name']
+                ?? '';
+            $nameParts = $this->parseName($name);
+
+            DonorDetail::create([
+                'donor_id' => $donor->id,
+                'first_name' => $nameParts['first_name'],
+                'last_name' => $nameParts['last_name'],
+            ]);
         }
 
-        // Get name from object data
-        $name = $objectData['customer_details']['name']
-            ?? $objectData['billing_details']['name']
-            ?? '';
-
-        $nameParts = $this->parseName($name);
-
-        return Individual::create([
-            'first_name' => $nameParts['first_name'],
-            'last_name' => $nameParts['last_name'],
-            'email' => $email,
-        ]);
+        return $donor;
     }
 
     /**
@@ -193,7 +191,7 @@ class StripeProcessorExtractor extends ProcessorExtractor
      *
      * @param  array<string, mixed>  $customerDetails
      */
-    protected function findOrCreateDonorFromCustomerDetails(array $customerDetails): Individual|Organization|null
+    protected function findOrCreateDonorFromCustomerDetails(array $customerDetails): ?Donor
     {
         $email = $customerDetails['email'] ?? null;
 
@@ -201,21 +199,23 @@ class StripeProcessorExtractor extends ProcessorExtractor
             return null;
         }
 
-        // Try to find existing individual by email
-        $individual = Individual::where('email', $email)->first();
+        $donor = Donor::firstOrCreate(
+            ['email' => $email],
+            []
+        );
 
-        if ($individual) {
-            return $individual;
+        if (! $donor->donorDetail) {
+            $name = $customerDetails['name'] ?? '';
+            $nameParts = $this->parseName($name);
+
+            DonorDetail::create([
+                'donor_id' => $donor->id,
+                'first_name' => $nameParts['first_name'],
+                'last_name' => $nameParts['last_name'],
+            ]);
         }
 
-        $name = $customerDetails['name'] ?? '';
-        $nameParts = $this->parseName($name);
-
-        return Individual::create([
-            'first_name' => $nameParts['first_name'],
-            'last_name' => $nameParts['last_name'],
-            'email' => $email,
-        ]);
+        return $donor;
     }
 
     /**

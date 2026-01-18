@@ -1,6 +1,7 @@
 <?php
 
 // RelationshipFactory.php
+
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -9,9 +10,9 @@ class RelationshipFactory extends Factory
 {
     public function definition(): array
     {
-        $fromType = $this->faker->randomElement([\App\Models\Individual::class, \App\Models\Organization::class]);
+        $fromType = $this->faker->randomElement([\App\Models\DonorDetail::class, \App\Models\Organization::class]);
         $from = $fromType::factory()->create();
-        $toType = $this->faker->randomElement([\App\Models\Individual::class, \App\Models\Organization::class]);
+        $toType = $this->faker->randomElement([\App\Models\DonorDetail::class, \App\Models\Organization::class]);
         $to = $toType::factory()->create();
 
         return [

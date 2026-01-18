@@ -3,8 +3,8 @@
 namespace App\Services\Processors;
 
 use App\Models\Campaign;
-use App\Models\Individual;
-use App\Models\Organization;
+use App\Models\Donor;
+use App\Models\DonorDetail;
 
 /**
  * Extractor for Givebutter webhook payloads.
@@ -78,7 +78,6 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
             $donor = $this->findOrCreateDonor($data['donor']);
             if ($donor) {
                 $extracted['donor_id'] = $donor->id;
-                $extracted['donor_type'] = $donor::class;
             }
         }
 
@@ -117,7 +116,7 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
      *
      * @param  array<string, mixed>  $donorData
      */
-    protected function findOrCreateDonor(array $donorData): Individual|Organization|null
+    protected function findOrCreateDonor(array $donorData): ?Donor
     {
         $email = $donorData['email'] ?? null;
 
@@ -125,23 +124,25 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
             return null;
         }
 
-        // Try to find existing individual by email
-        $individual = Individual::where('email', $email)->first();
+        // Find or create Donor by email
+        $donor = Donor::firstOrCreate(
+            ['email' => $email],
+            ['phone' => $donorData['phone'] ?? null]
+        );
 
-        if ($individual) {
-            return $individual;
+        // Ensure Donor has a linked DonorDetail (Givebutter donor data is individual)
+        if (! $donor->donorDetail) {
+            $name = $donorData['name'] ?? '';
+            $nameParts = $this->parseName($name);
+
+            DonorDetail::create([
+                'donor_id' => $donor->id,
+                'first_name' => $nameParts['first_name'],
+                'last_name' => $nameParts['last_name'],
+            ]);
         }
 
-        // Create new individual
-        $name = $donorData['name'] ?? '';
-        $nameParts = $this->parseName($name);
-
-        return Individual::create([
-            'first_name' => $nameParts['first_name'],
-            'last_name' => $nameParts['last_name'],
-            'email' => $email,
-            'phone' => $donorData['phone'] ?? null,
-        ]);
+        return $donor;
     }
 
     /**

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Donation extends Model
@@ -18,7 +17,6 @@ class Donation extends Model
         'processor_id',
         'reference_number',
         'donor_id',
-        'donor_type',
         'amount',
         'processor_fee',
         'net_amount',
@@ -43,11 +41,11 @@ class Donation extends Model
     }
 
     /**
-     * Get the donor (polymorphic relationship).
+     * Get the donor.
      */
-    public function donor(): MorphTo
+    public function donor(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(Donor::class);
     }
 
     /**

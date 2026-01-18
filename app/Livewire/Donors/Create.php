@@ -2,11 +2,11 @@
 
 namespace App\Livewire\Donors;
 
-use App\Models\Donor;
-use Livewire\Component;
-use Livewire\Attributes\Validate;
-use Livewire\WithFileUploads;
 use App\Models\Campaign;
+use App\Models\Donor;
+use Livewire\Attributes\Validate;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Create extends Component
 {
@@ -14,14 +14,16 @@ class Create extends Component
 
     #[Validate('required|string|max:255')]
     public string $first_name = '';
+
     #[Validate('required|string|max:255')]
     public string $last_name = '';
+
     #[Validate('required|email|max:255')]
     public string $email = '';
+
     #[Validate('nullable|string|max:20')]
-    public string $phone_number = '';
-    #[Validate('nullable|date')]
-    public ?string $start_date = null;
+    public string $phone = '';
+
     #[Validate('nullable|file|max:10240')] // Max 10MB
     public $media;
 
@@ -30,11 +32,13 @@ class Create extends Component
         $this->validate();
 
         $donor = Donor::create([
+            'email' => $this->email,
+            'phone' => $this->phone ?: null,
+        ]);
+
+        $donor->donorDetail()->create([
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
-            'email' => $this->email,
-            'phone_number' => $this->phone_number,
-            'start_date' => $this->start_date,
         ]);
 
         if ($this->media) {

@@ -1,29 +1,35 @@
 <?php
 
-// DonationFactory.php
 namespace Database\Factories;
 
+use App\Models\Donor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Donation>
+ */
 class DonationFactory extends Factory
 {
     public function definition(): array
     {
-        $donorType = $this->faker->randomElement([\App\Models\Individual::class, \App\Models\Organization::class]);
-        $donor = $donorType::factory()->create();
+        $donor = Donor::factory()->has(\App\Models\DonorDetail::factory())->create();
 
         return [
+            'processor' => $this->faker->randomElement(['givebutter', 'stripe']),
+            'processor_id' => $this->faker->optional()->uuid(),
+            'reference_number' => $this->faker->optional()->numerify('REF-########'),
             'donor_id' => $donor->id,
-            'donor_type' => $donorType,
             'amount' => $this->faker->randomFloat(2, 50, 5000),
-            'date' => $this->faker->dateTimeThisYear,
+            'processor_fee' => $this->faker->optional()->randomFloat(2, 0, 50),
+            'net_amount' => null,
+            'transaction_date' => $this->faker->dateTimeThisYear()->format('Y-m-d'),
             'payment_method' => $this->faker->randomElement(['credit_card', 'check', 'direct', 'paypal']),
-            'transaction_id' => $this->faker->uuid,
-            'pledge_id' => fake()->numberBetween(1, 9),
-            'campaign_id' => fake()->numberBetween(1, 9),
-            'chapter_id' => fake()->numberBetween(1, 9),
-            'account_id' => fake()->numberBetween(1, 9),
-            'notes' => $this->faker->paragraph,
+            'transaction_id' => $this->faker->optional()->uuid(),
+            'pledge_id' => null,
+            'campaign_id' => null,
+            'chapter_id' => null,
+            'account_id' => null,
+            'notes' => $this->faker->optional()->paragraph(),
         ];
     }
 }

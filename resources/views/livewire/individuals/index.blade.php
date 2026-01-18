@@ -60,10 +60,10 @@
                             {{ $individual->last_name }}
                         </td>
                         <td class="px-6 py-4 font-medium">
-                            {{ $individual->email }}
+                            {{ $individual->donor?->email }}
                         </td>
                         <td class="px-6 py-4 font-medium">
-                            {{ $individual->phone }}
+                            {{ $individual->donor?->phone }}
                         </td>
                         {{-- <td class="px-6 py-4">
                             @if ($donor->media_file)

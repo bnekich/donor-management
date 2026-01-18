@@ -4,24 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Individual extends Model
+class DonorDetail extends Model
 {
-    /** @use HasFactory<\Database\Factories\IndividualFactory> */
-    use HasFactory;
+    /** @use HasFactory<\Database\Factories\DonorDetailFactory> */
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'donor_details';
 
     protected $fillable = [
+        'donor_id',
         'first_name',
         'last_name',
-        'email',
-        'phone',
-        'address_line1',
-        'address_line2',
-        'city',
-        'county',
-        'state',
-        'zip',
-        'country',
         'birthday',
         'occupation',
         'organization_id',
@@ -33,7 +29,13 @@ class Individual extends Model
             'birthday' => 'date',
         ];
     }
-    public function organization()
+
+    public function donor(): BelongsTo
+    {
+        return $this->belongsTo(Donor::class);
+    }
+
+    public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }

@@ -2,22 +2,24 @@
 
 namespace App\Livewire\Individuals;
 
+use App\Models\DonorDetail;
 use Livewire\Component;
-use App\Models\Individual;
-use Livewire\WithPagination;
 
 class Index extends Component
 {
     public function delete(int $id): void
     {
-        $individual = Individual::findOrFail($id);
-        $individual->delete();
+        $donorDetail = DonorDetail::findOrFail($id);
+        $donorDetail->delete();
+        session()->flash('success', 'Individual donor successfully deleted.');
     }
 
     public function render()
     {
         return view('livewire.individuals.index', [
-            'individuals' => Individual::orderBy('last_name', 'asc')->paginate(10),
+            'individuals' => DonorDetail::with('donor', 'organization')
+                ->orderBy('last_name', 'asc')
+                ->paginate(10),
         ]);
     }
 }
