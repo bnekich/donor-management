@@ -30,7 +30,7 @@ class ProcessStagedTransaction implements ShouldQueue
      */
     public function __construct(
         public int $transactionId,
-        public string $processor = 'givebutter'
+        public string $processor
     ) {}
 
     /**

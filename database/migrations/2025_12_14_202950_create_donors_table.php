@@ -10,7 +10,9 @@ return new class extends Migration
     {
         Schema::create('donors', function (Blueprint $table) {
             $table->id();
-            $table->string('email')->nullable()->unique();
+            $table->string('first_name')->nullable();
+            $table->string('last_name')->nullable();
+            $table->string('email');
             $table->string('phone')->nullable();
             $table->string('address_line1')->nullable();
             $table->string('address_line2')->nullable();

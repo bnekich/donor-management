@@ -17,6 +17,8 @@ class Donor extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
+        'first_name',
+        'last_name',
         'email',
         'phone',
         'address_line1',
@@ -44,38 +46,31 @@ class Donor extends Model implements HasMedia
         return null;
     }
 
-    public function getNameAttribute(): string
-    {
-        if ($this->relationLoaded('donorDetail') && $this->donorDetail) {
-            return trim($this->donorDetail->first_name.' '.$this->donorDetail->last_name) ?: (string) $this->email;
-        }
+     public function getNameAttribute(): string
+     {
 
-        if ($this->relationLoaded('organization') && $this->organization) {
-            return $this->organization->name;
-        }
+    //     if ($this->relationLoaded('organization') && $this->organization) {
+    //         return $this->organization->name;
+    //     }
 
-        $this->loadMissing(['donorDetail', 'organization']);
+         $this->loadMissing(['donorDetail']);
 
-        if ($this->donorDetail) {
-            return trim($this->donorDetail->first_name.' '.$this->donorDetail->last_name) ?: (string) $this->email;
-        }
+    //     if ($this->organization) {
+    //         return $this->organization->name;
+    //     }
 
-        if ($this->organization) {
-            return $this->organization->name;
-        }
-
-        return (string) $this->email;
-    }
+         return (string) $this->email;
+     }
 
     public function donorDetail(): HasOne
     {
         return $this->hasOne(DonorDetail::class);
     }
 
-    public function organization(): HasOne
-    {
-        return $this->hasOne(Organization::class);
-    }
+//    public function organization(): HasOne
+//    {
+//        return $this->hasOne(Organization::class);
+//    }
 
     public function donations(): HasMany
     {

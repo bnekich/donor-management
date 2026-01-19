@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Database\Seeders\OrganizationSeeder;
-use Database\Seeders\IndividualSeeder;
+
 use Database\Seeders\CampaignSeeder;
 use Database\Seeders\ChapterSeeder;
 use Database\Seeders\ChartOfAccountSeeder;
@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
 //            OrganizationSeeder::class,
-//            IndividualSeeder::class,
 //            CampaignSeeder::class,
 //            ChapterSeeder::class,
 //            ChartOfAccountSeeder::class,

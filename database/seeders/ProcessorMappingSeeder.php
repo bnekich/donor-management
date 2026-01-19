@@ -7,21 +7,10 @@ use Illuminate\Database\Seeder;
 
 class ProcessorMappingSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         $mappings = [
             // Givebutter mappings
-            [
-                'processor' => 'givebutter',
-                'source_field' => 'data.id',
-                'target_field' => 'processor_id',
-                'transformation_type' => 'direct',
-                'is_required' => true,
-                'priority' => 1,
-            ],
             [
                 'processor' => 'givebutter',
                 'source_field' => 'data.amount',
@@ -40,28 +29,29 @@ class ProcessorMappingSeeder extends Seeder
             ],
             [
                 'processor' => 'givebutter',
-                'source_field' => 'data.reference_number',
-                'target_field' => 'reference_number',
+                'source_field' => 'data.id',
+                'target_field' => 'processor_id',
+                'transformation_type' => 'direct',
+                'is_required' => true,
+                'priority' => 1,
+            ],
+            [
+                'processor' => 'givebutter',
+                'source_field' => 'data.is_recurring',
+                'target_field' => 'is_recurring',
                 'transformation_type' => 'direct',
                 'is_required' => false,
                 'priority' => 4,
             ],
             [
                 'processor' => 'givebutter',
-                'source_field' => 'data.transaction_id',
-                'target_field' => 'transaction_id',
+                'source_field' => 'data.method',
+                'target_field' => 'payment_method',
                 'transformation_type' => 'direct',
                 'is_required' => false,
                 'priority' => 5,
             ],
-            [
-                'processor' => 'givebutter',
-                'source_field' => 'data.notes',
-                'target_field' => 'notes',
-                'transformation_type' => 'direct',
-                'is_required' => false,
-                'priority' => 6,
-            ],
+
             // Stripe mappings
             [
                 'processor' => 'stripe',

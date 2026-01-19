@@ -16,7 +16,6 @@ class OrganizationFactory extends Factory
     public function definition(): array
     {
         return [
-            'donor_id' => Donor::factory(),
             'name' => $this->faker->company(),
             'website' => $this->faker->optional()->url(),
             'description' => $this->faker->optional()->paragraph(),

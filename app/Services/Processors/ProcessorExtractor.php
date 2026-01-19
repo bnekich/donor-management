@@ -2,6 +2,7 @@
 
 namespace App\Services\Processors;
 
+use App\Models\ProcessorMapping;
 use Illuminate\Support\Collection;
 
 /**
@@ -26,11 +27,11 @@ abstract class ProcessorExtractor
     /**
      * Get field mappings for this processor from the database.
      *
-     * @return Collection<int, array<string, mixed>>
+     * @return Collection<int, ProcessorMapping>
      */
     protected function getMappings(): Collection
     {
-        return \App\Models\ProcessorMapping::where('processor', $this->getProcessorName())
+        return ProcessorMapping::where('processor', $this->getProcessorName())
             ->where('is_active', true)
             ->orderBy('priority')
             ->get();

@@ -13,7 +13,6 @@ class Organization extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'donor_id',
         'name',
         'website',
         'description',
@@ -28,8 +27,8 @@ class Organization extends Model
         ];
     }
 
-    public function donor(): BelongsTo
-    {
-        return $this->belongsTo(Donor::class);
-    }
+//    public function donor(): BelongsTo
+//    {
+//        return $this->belongsTo(Donor::class);
+//    }
 }

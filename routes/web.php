@@ -1,14 +1,14 @@
 <?php
 
+use App\Livewire\Campaigns;
+use App\Livewire\Donors;
+use App\Livewire\ProcessorMappings;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
-use App\Livewire\Donors;
-use App\Livewire\Campaigns;
-use App\Livewire\Individuals;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,13 +29,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('donors/create', Donors\Create::class)->name('donors.create');
     Route::get('donors/{donor}/edit', Donors\Edit::class)->name('donors.edit');
 
-    Route::get('individuals', Individuals\Index::class)->name('individuals.index');
-    Route::get('individuals/create', Individuals\Create::class)->name('individuals.create');
-    //Route::get('individuals/{individual}/edit', Individuals\Edit::class)->name('individuals.edit');
-
     Route::get('campaigns', Campaigns\Index::class)->name('campaigns.index');
     Route::get('campaigns/create', Campaigns\Create::class)->name('campaigns.create');
     Route::get('campaigns/{campaign}/edit', Campaigns\Edit::class)->name('campaigns.edit');
+
+    Route::get('processor-mappings', ProcessorMappings\Index::class)->name('processor-mappings.index');
+    Route::get('processor-mappings/create', ProcessorMappings\Create::class)->name('processor-mappings.create');
+    Route::get('processor-mappings/{processorMapping}/edit', ProcessorMappings\Edit::class)->name('processor-mappings.edit');
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(

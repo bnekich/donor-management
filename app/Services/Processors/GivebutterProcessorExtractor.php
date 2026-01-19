@@ -5,6 +5,7 @@ namespace App\Services\Processors;
 use App\Models\Campaign;
 use App\Models\Donor;
 use App\Models\DonorDetail;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Extractor for Givebutter webhook payloads.
@@ -16,12 +17,6 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         return 'givebutter';
     }
 
-    /**
-     * Extract standardized donation data from Givebutter payload.
-     *
-     * @param  array<string, mixed>  $payload
-     * @return array<string, mixed>
-     */
     public function extract(array $payload): array
     {
         // Handle both wrapped and unwrapped payloads
@@ -60,13 +55,6 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         return $extracted;
     }
 
-    /**
-     * Apply Givebutter-specific extraction logic.
-     *
-     * @param  array<string, mixed>  $data
-     * @param  array<string, mixed>  $extracted
-     * @return array<string, mixed>
-     */
     protected function applyProcessorSpecificLogic(array $data, array $extracted): array
     {
         // Set processor name
@@ -74,8 +62,8 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         $extracted['processor_id'] = $data['id'] ?? null;
 
         // Extract donor information and find/create donor
-        if (isset($data['donor'])) {
-            $donor = $this->findOrCreateDonor($data['donor']);
+        if (isset($data['email'])) {
+            $donor = $this->findOrCreateDonor($data);
             if ($donor) {
                 $extracted['donor_id'] = $donor->id;
             }
@@ -100,7 +88,7 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         }
 
         // Extract payment method
-        $extracted['payment_method'] = $this->determinePaymentMethod($data);
+        // $extracted['payment_method'] = $this->determinePaymentMethod($data);
 
         // Calculate net amount if not already set
         if (! isset($extracted['net_amount']) && isset($extracted['amount'])) {
@@ -111,11 +99,7 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         return $extracted;
     }
 
-    /**
-     * Find or create donor from Givebutter donor data.
-     *
-     * @param  array<string, mixed>  $donorData
-     */
+
     protected function findOrCreateDonor(array $donorData): ?Donor
     {
         $email = $donorData['email'] ?? null;
@@ -124,54 +108,63 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
             return null;
         }
 
-        // Find or create Donor by email
+        // Extract address data from nested address object
+        $address = $donorData['address'] ?? [];
+
+        // Prepare all donor attributes
+        $donorAttributes = [
+            'first_name' => $donorData['first_name'] ?? null,
+            'last_name' => $donorData['last_name'] ?? null,
+            'phone' => $donorData['phone'] ?? null,
+            'address_line1' => $address['address_1'] ?? null,
+            'address_line2' => $address['address_2'] ?? null,
+            'city' => $address['city'] ?? null,
+            'state' => $address['state'] ?? null,
+            'zip' => $address['zipcode'] ?? null,
+            'country' => $address['country'] ?? null,
+        ];
+
+        // Find or create by email, then update with all attributes
         $donor = Donor::firstOrCreate(
             ['email' => $email],
-            ['phone' => $donorData['phone'] ?? null]
+            ['email' => $email] // Only email needed for creation
         );
+
+        // Update all fields explicitlyn
+        $donor->update($donorAttributes);
+
 
         // Ensure Donor has a linked DonorDetail (Givebutter donor data is individual)
         if (! $donor->donorDetail) {
-            $name = $donorData['name'] ?? '';
-            $nameParts = $this->parseName($name);
-
             DonorDetail::create([
                 'donor_id' => $donor->id,
-                'first_name' => $nameParts['first_name'],
-                'last_name' => $nameParts['last_name'],
             ]);
-        }
+        } 
 
         return $donor;
     }
 
-    /**
-     * Parse full name into first and last name.
-     *
-     * @return array{first_name: string, last_name: string}
-     */
-    protected function parseName(string $name): array
-    {
-        $parts = explode(' ', trim($name), 2);
+    /*     protected function parseName(string $name): array
+        {
+            $parts = explode(' ', trim($name), 2);
 
-        return [
-            'first_name' => $parts[0] ?? '',
-            'last_name' => $parts[1] ?? '',
-        ];
-    }
+            return [
+                'first_name' => $parts[0] ?? '',
+                'last_name' => $parts[1] ?? '',
+            ];
+        }
+    */
 
-    /**
-     * Determine payment method from Givebutter data.
-     */
-    protected function determinePaymentMethod(array $data): string
-    {
-        $paymentMethod = strtolower($data['payment_method'] ?? $data['method'] ?? 'credit_card');
+    /*     protected function determinePaymentMethod(array $data): string
+        {
+            $paymentMethod = strtolower($data['payment_method'] ?? $data['method'] ?? 'credit_card');
 
-        return match (true) {
-            str_contains($paymentMethod, 'card') => 'credit_card',
-            str_contains($paymentMethod, 'ach') || str_contains($paymentMethod, 'bank') => 'direct',
-            str_contains($paymentMethod, 'check') => 'check',
-            default => 'credit_card',
-        };
-    }
+            return match (true) {
+                str_contains($paymentMethod, 'card') => 'credit_card',
+                str_contains($paymentMethod, 'ach') || str_contains($paymentMethod, 'bank') => 'direct',
+                str_contains($paymentMethod, 'check') => 'check',
+                default => 'credit_card',
+            };
+        }
+    */
 }
