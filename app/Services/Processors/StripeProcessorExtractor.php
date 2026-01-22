@@ -5,6 +5,7 @@ namespace App\Services\Processors;
 use App\Models\Campaign;
 use App\Models\Donor;
 use App\Models\DonorDetail;
+use App\Processor;
 
 /**
  * Extractor for Stripe webhook payloads.
@@ -13,7 +14,7 @@ class StripeProcessorExtractor extends ProcessorExtractor
 {
     public function getProcessorName(): string
     {
-        return 'stripe';
+        return Processor::Stripe->value;
     }
 
     /**
@@ -71,7 +72,7 @@ class StripeProcessorExtractor extends ProcessorExtractor
     protected function applyProcessorSpecificLogic(array $objectData, array $extracted, array $fullPayload): array
     {
         // Set processor name
-        $extracted['processor'] = 'stripe';
+        $extracted['processor'] = Processor::Stripe->value;
         $extracted['processor_id'] = $objectData['id'] ?? $fullPayload['id'] ?? null;
 
         // Extract amount (Stripe amounts are in cents)

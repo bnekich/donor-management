@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Donation;
+use App\Processor;
 use App\Services\Processors\GivebutterProcessorExtractor;
 use App\Services\Processors\ProcessorExtractor;
 use App\Services\Processors\StripeProcessorExtractor;
@@ -133,8 +134,8 @@ class DonationTransformer
     protected function getExtractor(string $processor): ?ProcessorExtractor
     {
         return match ($processor) {
-            'givebutter' => new GivebutterProcessorExtractor,
-            'stripe' => new StripeProcessorExtractor,
+            Processor::Givebutter->value => new GivebutterProcessorExtractor,
+            Processor::Stripe->value => new StripeProcessorExtractor,
             // Add more processors here as needed
             default => null,
         };

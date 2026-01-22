@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Donor;
+use App\Processor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,7 +16,7 @@ class DonationFactory extends Factory
         $donor = Donor::factory()->has(\App\Models\DonorDetail::factory())->create();
 
         return [
-            'processor' => $this->faker->randomElement(['givebutter', 'stripe']),
+            'processor' => $this->faker->randomElement([Processor::Givebutter->value, Processor::Stripe->value]),
             'processor_id' => $this->faker->optional()->uuid(),
             'reference_number' => $this->faker->optional()->numerify('REF-########'),
             'donor_id' => $donor->id,

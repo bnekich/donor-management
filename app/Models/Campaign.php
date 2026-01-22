@@ -10,17 +10,15 @@ class Campaign extends Model
     use HasFactory;
 
     protected $fillable = [
+        'processor_id',
+        'processor',
+        'code',
         'name',
         'description',
         'start_date',
         'end_date',
         'goal',
     ];
-
-    // public function donors()
-    // {
-    //     return $this->belongsToMany(Donor::class, 'donors_campaigns');
-    // }
 
     public function pledges()
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessStagedTransaction;
 use App\Models\StripeTransaction;
+use App\Processor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -100,7 +101,7 @@ class StripeWebhookController extends Controller
         ];
 
         if (in_array($eventType, $processableEvents)) {
-            ProcessStagedTransaction::dispatch($transaction->id, 'stripe');
+            ProcessStagedTransaction::dispatch($transaction->id, Processor::Stripe->value);
         }
 
         return response()->json([

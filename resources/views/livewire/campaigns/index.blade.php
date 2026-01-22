@@ -15,9 +15,6 @@
                         Description
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Participating Donors
-                    </th>
-                    <th scope="col" class="px-6 py-3">
                         Actions
                     </th>
                 </tr>
@@ -32,9 +29,6 @@
                         </th>
                         <td class="px-6 py-4">
                             {{ $campaign->description }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ $campaign->donors_count }}
                         </td>
                         <td class="px-6 py-4 space-x-2">
                             <flux:button href="{{ route('campaigns.edit', $campaign) }}" variant="filled">

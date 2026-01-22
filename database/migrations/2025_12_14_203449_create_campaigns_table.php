@@ -10,7 +10,10 @@ return new class extends Migration {
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
+            $table->string('processor_id')->nullable()->unique();
+            $table->string('processor')->nullable();
             $table->string('name');
+            $table->string('code')->nullable();
             $table->text('description')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

@@ -17,6 +17,8 @@ class Donor extends Model implements HasMedia
     use HasFactory, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = [
+        'processor_id',
+        'processor',
         'first_name',
         'last_name',
         'email',
@@ -82,8 +84,4 @@ class Donor extends Model implements HasMedia
         return $this->hasMany(Pledge::class);
     }
 
-    public function campaigns(): BelongsToMany
-    {
-        return $this->belongsToMany(Campaign::class, 'donors_campaigns');
-    }
 }

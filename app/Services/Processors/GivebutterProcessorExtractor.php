@@ -5,6 +5,7 @@ namespace App\Services\Processors;
 use App\Models\Campaign;
 use App\Models\Donor;
 use App\Models\DonorDetail;
+use App\Processor;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -14,7 +15,7 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
 {
     public function getProcessorName(): string
     {
-        return 'givebutter';
+        return Processor::Givebutter->value;
     }
 
     public function extract(array $payload): array
@@ -58,10 +59,10 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
     protected function applyProcessorSpecificLogic(array $data, array $extracted): array
     {
         // Set processor name
-        $extracted['processor'] = 'givebutter';
+        $extracted['processor'] = Processor::Givebutter->value;
         $extracted['processor_id'] = $data['id'] ?? null;
-
-        // Extract donor information and find/create donor
+        Log::debug('Create donor if email is present: ' . $data['email'] ?? 'no email');
+        //Extract donor information and find/create donor
         if (isset($data['email'])) {
             $donor = $this->findOrCreateDonor($data);
             if ($donor) {
@@ -71,10 +72,7 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
 
         // Find campaign by external ID if provided
         if (isset($data['campaign_id'])) {
-            $campaign = Campaign::where('name', 'like', '%'.$data['campaign_id'].'%')
-                ->orWhere('id', $data['campaign_id'])
-                ->first();
-
+            $campaign = $this->findOrCreateCampaign($data);
             if ($campaign) {
                 $extracted['campaign_id'] = $campaign->id;
             }
@@ -91,69 +89,70 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
         // $extracted['payment_method'] = $this->determinePaymentMethod($data);
 
         // Calculate net amount if not already set
-        if (! isset($extracted['net_amount']) && isset($extracted['amount'])) {
-            $fee = $extracted['processor_fee'] ?? 0;
-            $extracted['net_amount'] = max(0, (float) $extracted['amount'] - (float) $fee);
-        }
+        // if (! isset($extracted['net_amount']) && isset($extracted['amount'])) {
+        //     $fee = $extracted['processor_fee'] ?? 0;
+        //     $extracted['net_amount'] = max(0, (float) $extracted['amount'] - (float) $fee);
+        // }
 
         return $extracted;
     }
+    protected function findOrCreateCampaign(array $campaignData): ?Campaign
+    {
+        // capture campaign_id from the campaignData, if its not there, return null
+        $processor_id = $campaignData['campaign_id'] ?? null;
+        if (! $processor_id) {
+            return null;
+        }
 
+       $campaign = Campaign::updateOrCreate(
+            ['processor_id' => $processor_id],
+            [
+                'processor' => Processor::Givebutter->value,
+                'name' => $campaignData['campaign_title'] ?? null,
+                'code' => $campaignData['campaign_code'] ?? null,
+            ]
+        );
+
+        // TODO call Givebutter's API to get the campaign details and update the campaign 
+
+         return $campaign;
+    }
 
     protected function findOrCreateDonor(array $donorData): ?Donor
     {
         $email = $donorData['email'] ?? null;
+        $processor_id = $donorData['contact_id'] ?? null;
 
-        if (! $email) {
+        if (! $email || ! $processor_id) {
             return null;
         }
-
         // Extract address data from nested address object
         $address = $donorData['address'] ?? [];
-
-        // Prepare all donor attributes
-        $donorAttributes = [
-            'first_name' => $donorData['first_name'] ?? null,
-            'last_name' => $donorData['last_name'] ?? null,
-            'phone' => $donorData['phone'] ?? null,
-            'address_line1' => $address['address_1'] ?? null,
-            'address_line2' => $address['address_2'] ?? null,
-            'city' => $address['city'] ?? null,
-            'state' => $address['state'] ?? null,
-            'zip' => $address['zipcode'] ?? null,
-            'country' => $address['country'] ?? null,
-        ];
-
-        // Find or create by email, then update with all attributes
-        $donor = Donor::firstOrCreate(
-            ['email' => $email],
-            ['email' => $email] // Only email needed for creation
+        $donor = Donor::updateOrCreate(
+            ['email' => $email,'processor_id' => $processor_id],
+            [
+                'processor' => Processor::Givebutter->value,
+                'first_name' => $donorData['first_name'] ?? null,
+                'last_name' => $donorData['last_name'] ?? null,
+                'phone' => $donorData['phone'] ?? null,
+                'address_line1' => $address['address_1'] ?? null,
+                'address_line2' => $address['address_2'] ?? null,
+                'city' => $address['city'] ?? null,
+                'state' => $address['state'] ?? null,
+                'zip' => $address['zipcode'] ?? null,
+                'country' => $address['country'] ?? null,
+            ]
         );
-
-        // Update all fields explicitlyn
-        $donor->update($donorAttributes);
-
 
         // Ensure Donor has a linked DonorDetail (Givebutter donor data is individual)
         if (! $donor->donorDetail) {
             DonorDetail::create([
                 'donor_id' => $donor->id,
             ]);
-        } 
+        }
 
         return $donor;
     }
-
-    /*     protected function parseName(string $name): array
-        {
-            $parts = explode(' ', trim($name), 2);
-
-            return [
-                'first_name' => $parts[0] ?? '',
-                'last_name' => $parts[1] ?? '',
-            ];
-        }
-    */
 
     /*     protected function determinePaymentMethod(array $data): string
         {

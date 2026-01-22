@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\ProcessorMapping;
+use App\Processor;
 use Illuminate\Database\Seeder;
 
 class ProcessorMappingSeeder extends Seeder
@@ -12,7 +13,7 @@ class ProcessorMappingSeeder extends Seeder
         $mappings = [
             // Givebutter mappings
             [
-                'processor' => 'givebutter',
+                'processor' => Processor::Givebutter->value,
                 'source_field' => 'data.amount',
                 'target_field' => 'amount',
                 'transformation_type' => 'direct',
@@ -20,7 +21,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 2,
             ],
             [
-                'processor' => 'givebutter',
+                'processor' => Processor::Givebutter->value,
                 'source_field' => 'data.fee',
                 'target_field' => 'processor_fee',
                 'transformation_type' => 'direct',
@@ -28,7 +29,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 3,
             ],
             [
-                'processor' => 'givebutter',
+                'processor' => Processor::Givebutter->value,
                 'source_field' => 'data.id',
                 'target_field' => 'processor_id',
                 'transformation_type' => 'direct',
@@ -36,7 +37,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 1,
             ],
             [
-                'processor' => 'givebutter',
+                'processor' => Processor::Givebutter->value,
                 'source_field' => 'data.is_recurring',
                 'target_field' => 'is_recurring',
                 'transformation_type' => 'direct',
@@ -44,7 +45,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 4,
             ],
             [
-                'processor' => 'givebutter',
+                'processor' => Processor::Givebutter->value,
                 'source_field' => 'data.method',
                 'target_field' => 'payment_method',
                 'transformation_type' => 'direct',
@@ -54,7 +55,7 @@ class ProcessorMappingSeeder extends Seeder
 
             // Stripe mappings
             [
-                'processor' => 'stripe',
+                'processor' => Processor::Stripe->value,
                 'source_field' => 'id',
                 'target_field' => 'processor_id',
                 'transformation_type' => 'direct',
@@ -62,7 +63,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 1,
             ],
             [
-                'processor' => 'stripe',
+                'processor' => Processor::Stripe->value,
                 'source_field' => 'description',
                 'target_field' => 'notes',
                 'transformation_type' => 'direct',
@@ -70,7 +71,7 @@ class ProcessorMappingSeeder extends Seeder
                 'priority' => 2,
             ],
             [
-                'processor' => 'stripe',
+                'processor' => Processor::Stripe->value,
                 'source_field' => 'metadata.notes',
                 'target_field' => 'notes',
                 'transformation_type' => 'direct',

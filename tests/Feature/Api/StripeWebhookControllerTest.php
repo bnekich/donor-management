@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\StripeTransaction;
+use App\Processor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 
@@ -110,7 +111,7 @@ test('successfully stores payment_intent.succeeded event', function () {
 
     Queue::assertPushed(\App\Jobs\ProcessStagedTransaction::class, function ($job) use ($transaction) {
         return $job->transactionId === $transaction->id
-            && $job->processor === 'stripe';
+            && $job->processor === Processor::Stripe->value;
     });
 });
 

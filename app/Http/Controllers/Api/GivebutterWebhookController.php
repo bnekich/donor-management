@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessStagedTransaction;
 use App\Models\GivebutterTransaction;
+use App\Processor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -88,7 +89,7 @@ class GivebutterWebhookController extends Controller
         // Dispatch job to process the transaction asynchronously
         // Only process successful transactions
         if ($event === 'transaction.succeeded') {
-            ProcessStagedTransaction::dispatch($transaction->id, 'givebutter');
+            ProcessStagedTransaction::dispatch($transaction->id, Processor::Givebutter->value);
         }
 
         return response()->json([

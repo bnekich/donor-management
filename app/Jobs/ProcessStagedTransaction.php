@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\GivebutterTransaction;
 use App\Models\StripeTransaction;
+use App\Processor;
 use App\Services\DonationTransformer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -121,8 +122,8 @@ class ProcessStagedTransaction implements ShouldQueue
     protected function getStagedTransaction(): GivebutterTransaction|StripeTransaction|null
     {
         return match ($this->processor) {
-            'givebutter' => GivebutterTransaction::find($this->transactionId),
-            'stripe' => StripeTransaction::find($this->transactionId),
+            Processor::Givebutter->value => GivebutterTransaction::find($this->transactionId),
+            Processor::Stripe->value => StripeTransaction::find($this->transactionId),
             // Add more processors here
             default => null,
         };
