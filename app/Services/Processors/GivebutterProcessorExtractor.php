@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\Donor;
 use App\Models\DonorDetail;
 use App\Processor;
+use App\Models\ChartOfAccount;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -78,6 +79,14 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
             }
         }
 
+        // Find fund by external ID if provided
+        if (isset($data['fund_id'])) {
+            $fund = $this->findOrCreateChartOfAccount($data);
+            if ($fund) {
+                $extracted['fund_id'] = $fund->id;
+            }
+        }
+
         // Extract transaction date
         if (isset($data['created_at'])) {
             $extracted['transaction_date'] = date('Y-m-d', strtotime($data['created_at']));
@@ -96,6 +105,27 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
 
         return $extracted;
     }
+    protected function findOrCreateChartOfAccount(array $chartOfAccountData): ?ChartOfAccount
+    {
+        $processor_id = $chartOfAccountData['fund_id'] ?? null;
+
+        if (! $processor_id) {
+            return null;
+        }
+
+        $chartOfAccount = ChartOfAccount::updateOrCreate(
+            ['processor_id' => $processor_id],
+            [
+                'processor' => Processor::Givebutter->value,
+                'code' => $chartOfAccountData['fund_code'] ?? null,
+                'type' => 'income',
+            ]
+        );
+
+        // TODO call Givebutter's API to get the fund details
+        return $chartOfAccount;
+    }
+
     protected function findOrCreateCampaign(array $campaignData): ?Campaign
     {
         // capture campaign_id from the campaignData, if its not there, return null
@@ -146,8 +176,10 @@ class GivebutterProcessorExtractor extends ProcessorExtractor
 
         // Ensure Donor has a linked DonorDetail (Givebutter donor data is individual)
         if (! $donor->donorDetail) {
-            DonorDetail::create([
-                'donor_id' => $donor->id,
+            DonorDetail::updateOrCreate(
+                ['donor_id' => $donor->id],
+                [
+                'can_be_contacted' => $donorData['communication_opt_in'] ?? false,
             ]);
         }
 

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable()->constrained('chart_of_accounts')->onDelete('set null');
             $table->text('notes')->nullable();
             $table->boolean('is_recurring')->nullable();
+            $table->string('status')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

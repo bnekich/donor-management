@@ -52,6 +52,22 @@ class ProcessorMappingSeeder extends Seeder
                 'is_required' => false,
                 'priority' => 5,
             ],
+            [
+                'processor' => Processor::Givebutter->value,
+                'source_field' => 'data.number',
+                'target_field' => 'reference_number',
+                'transformation_type' => 'direct',
+                'is_required' => false,
+                'priority' => 6,
+            ],
+            [
+                'processor' => Processor::Givebutter->value,
+                'source_field' => 'data.status',
+                'target_field' => 'status',
+                'transformation_type' => 'direct',
+                'is_required' => false,
+                'priority' => 7,
+            ],
 
             // Stripe mappings
             [

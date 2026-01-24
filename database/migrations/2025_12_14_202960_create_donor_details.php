@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('birthday')->nullable();
             $table->string('occupation')->nullable();
             $table->foreignId('organization_id')->nullable()->constrained('organizations')->onDelete('set null');
+            $table->boolean('can_be_contacted')->default(false);
             $table->softDeletes();
             $table->timestamps();
         });

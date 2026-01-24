@@ -10,8 +10,10 @@ return new class extends Migration {
     {
         Schema::create('chart_of_accounts', function (Blueprint $table) {
             $table->id();
+            $table->string('processor_id')->nullable()->unique();
+            $table->string('processor')->nullable();
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
             $table->enum('type', ['income', 'expense', 'asset', 'liability', 'equity']);
             $table->softDeletes();
