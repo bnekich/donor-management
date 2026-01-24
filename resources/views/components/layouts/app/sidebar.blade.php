@@ -19,6 +19,8 @@
                     wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 <flux:navlist.item icon="megaphone" :href="route('campaigns.index')"
                     :current="request()->routeIs('campaigns.*')" wire:navigate>{{ __('Campaigns') }}</flux:navlist.item>
+                <flux:navlist.item icon="currency-dollar" :href="route('donations.index')"
+                    :current="request()->routeIs('donations.*')" wire:navigate>{{ __('Donations') }}</flux:navlist.item>
             </flux:navlist.group>
         </flux:navlist>
 

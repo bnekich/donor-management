@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Campaigns;
+use App\Livewire\Donations;
 use App\Livewire\Donors;
 use App\Livewire\ProcessorMappings;
 use App\Livewire\Settings\Appearance;
@@ -24,6 +25,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/profile', Profile::class)->name('profile.edit');
     Route::get('settings/password', Password::class)->name('user-password.edit');
     Route::get('settings/appearance', Appearance::class)->name('appearance.edit');
+
+    Route::get('donations', Donations\Index::class)->name('donations.index');
 
     Route::get('donors', Donors\Index::class)->name('donors.index');
     Route::get('donors/create', Donors\Create::class)->name('donors.create');
