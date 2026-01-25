@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Trust all proxies (needed for Digital Ocean App Platform and similar hosting)
         $middleware->trustProxies(at: '*');
+        
+        // Register alias for password change middleware
+        $middleware->alias([
+            'password.change.required' => \App\Http\Middleware\RequirePasswordChange::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

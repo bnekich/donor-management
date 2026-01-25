@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'password_changed_at',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'password_changed_at' => 'datetime',
         ];
     }
 
@@ -60,5 +62,21 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Check if the user must change their password.
+     */
+    public function mustChangePassword(): bool
+    {
+        return $this->password_changed_at === null;
+    }
+
+    /**
+     * Mark the user's password as changed.
+     */
+    public function markPasswordAsChanged(): void
+    {
+        $this->update(['password_changed_at' => now()]);
     }
 }

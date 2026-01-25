@@ -1,12 +1,14 @@
 <?php
 
-test('registration screen can be rendered', function () {
+test('registration screen is not accessible', function () {
     $response = $this->get(route('register'));
 
-    $response->assertStatus(200);
+    $response->assertNotFound();
 });
 
-test('new users can register', function () {
+test('registration route does not exist', function () {
+    expect(route('register', absolute: false))->toBe('/register');
+    
     $response = $this->post(route('register.store'), [
         'name' => 'John Doe',
         'email' => 'test@example.com',
@@ -14,8 +16,5 @@ test('new users can register', function () {
         'password_confirmation' => 'password',
     ]);
 
-    $response->assertSessionHasNoErrors()
-        ->assertRedirect(route('dashboard', absolute: false));
-
-    $this->assertAuthenticated();
+    $response->assertNotFound();
 });

@@ -16,10 +16,15 @@ Route::get('/', function () {
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'password.change.required'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('password/change', \App\Livewire\Auth\ChangePassword::class)
+        ->name('password.change');
+});
+
+Route::middleware(['auth', 'password.change.required'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
