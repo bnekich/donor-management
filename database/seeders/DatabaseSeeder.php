@@ -5,16 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\OrganizationSeeder;
-
-use Database\Seeders\CampaignSeeder;
-use Database\Seeders\ChapterSeeder;
-use Database\Seeders\ChartOfAccountSeeder;
-use Database\Seeders\PledgeSeeder;
-use Database\Seeders\DonationSeeder;
-use Database\Seeders\NoteSeeder;
-use Database\Seeders\FundingRequestSeeder;
-use Database\Seeders\RelationshipSeeder;
 use Database\Seeders\ProcessorMappingSeeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -25,15 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-//            OrganizationSeeder::class,
-//            CampaignSeeder::class,
-//            ChapterSeeder::class,
-//            ChartOfAccountSeeder::class,
-//            PledgeSeeder::class,
-//            DonationSeeder::class,
-//            NoteSeeder::class,
-//            FundingRequestSeeder::class,
-//            RelationshipSeeder::class,
+            // ChapterSeeder::class,
+            // ChartOfAccountSeeder::class,
+            // FundingRequestSeeder::class,
+            // RelationshipSeeder::class,
             ProcessorMappingSeeder::class,
         ]);
 
