@@ -1,15 +1,12 @@
 {
     "agents": [
-        "claude_code",
-        "codex",
-        "copilot",
-        "cursor",
-        "gemini",
-        "opencode"
+        "cursor"
     ],
     "editors": [
-        "cursor",
-        "vscode"
+        "cursor"
     ],
-    "guidelines": []
+    "guidelines": [
+        "laravel/fortify"
+    ],
+    "herd_mcp": true
 }

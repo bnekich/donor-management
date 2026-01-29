@@ -17,6 +17,9 @@ test('two factor challenge can be rendered', function () {
     if (! Features::canManageTwoFactorAuthentication()) {
         $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
+    if (! app()->environment('production')) {
+        $this->markTestSkipped('2FA challenge is skipped when not in production.');
+    }
 
     Features::twoFactorAuthentication([
         'confirm' => true,

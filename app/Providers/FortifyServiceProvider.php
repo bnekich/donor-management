@@ -2,12 +2,16 @@
 
 namespace App\Providers;
 
+use App\Actions\Fortify\RedirectIfTwoFactorAuthenticatable as AppRedirectIfTwoFactorAuthenticatable;
+use App\Http\Responses\LoginResponse as AppLoginResponse;
 use App\Actions\Fortify\ResetUserPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
+use Laravel\Fortify\Contracts\RedirectsIfTwoFactorAuthenticatable;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -17,7 +21,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(RedirectsIfTwoFactorAuthenticatable::class, AppRedirectIfTwoFactorAuthenticatable::class);
+        $this->app->singleton(LoginResponseContract::class, AppLoginResponse::class);
     }
 
     /**

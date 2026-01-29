@@ -18,16 +18,18 @@
 
                     <livewire:settings.two-factor.recovery-codes :$requiresConfirmation/>
 
-                    <div class="flex justify-start">
-                        <flux:button
-                            variant="danger"
-                            icon="shield-exclamation"
-                            icon:variant="outline"
-                            wire:click="disable"
-                        >
-                            {{ __('Disable 2FA') }}
-                        </flux:button>
-                    </div>
+                    @if (! app()->environment('production'))
+                        <div class="flex justify-start">
+                            <flux:button
+                                variant="danger"
+                                icon="shield-exclamation"
+                                icon:variant="outline"
+                                wire:click="disable"
+                            >
+                                {{ __('Disable 2FA') }}
+                            </flux:button>
+                        </div>
+                    @endif
                 </div>
             @else
                 <div class="space-y-4">
@@ -36,7 +38,7 @@
                     </div>
 
                     <flux:text variant="subtle">
-                        {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
+                        {{ __('Use an authenticator app on your phone (e.g. Google Authenticator, Microsoft Authenticator, or Authy). Scan the QR code below or enter the code manually. You will be asked for the 6-digit code when you sign in.') }}
                     </flux:text>
 
                     <flux:button
@@ -81,6 +83,9 @@
                 <div class="space-y-2 text-center">
                     <flux:heading size="lg">{{ $this->modalConfig['title'] }}</flux:heading>
                     <flux:text>{{ $this->modalConfig['description'] }}</flux:text>
+                    <flux:text variant="subtle" class="block text-start mt-2">
+                        {{ __('Use an authenticator app on your phone (e.g. Google Authenticator, Microsoft Authenticator, or Authy). Scan the QR code below or enter the code manually. You will be asked for the 6-digit code when you sign in.') }}
+                    </flux:text>
                 </div>
             </div>
 

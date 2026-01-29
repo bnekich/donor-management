@@ -8,15 +8,24 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
+use App\Livewire\Users;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->guest()) {
+        return redirect()->route('login');
+    }
+
+    if (auth()->user()->mustChangePassword()) {
+        return redirect()->route('password.change');
+    }
+
+    return redirect()->route('dashboard');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified', 'password.change.required'])
+    ->middleware(['auth', 'verified', 'password.change.required', 'two-factor.required'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
@@ -24,7 +33,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('password.change');
 });
 
-Route::middleware(['auth', 'password.change.required'])->group(function () {
+Route::middleware(['auth', 'password.change.required', 'two-factor.required'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');
@@ -44,6 +53,13 @@ Route::middleware(['auth', 'password.change.required'])->group(function () {
     Route::get('processor-mappings', ProcessorMappings\Index::class)->name('processor-mappings.index');
     Route::get('processor-mappings/create', ProcessorMappings\Create::class)->name('processor-mappings.create');
     Route::get('processor-mappings/{processorMapping}/edit', ProcessorMappings\Edit::class)->name('processor-mappings.edit');
+
+    Route::middleware('can:manageUsers')->group(function () {
+        Route::get('users', Users\Index::class)->name('users.index');
+        Route::get('users/create', Users\Create::class)->name('users.create');
+        Route::get('users/{user}', Users\Show::class)->name('users.show');
+        Route::get('users/{user}/edit', Users\Edit::class)->name('users.edit');
+    });
 
     Route::get('settings/two-factor', TwoFactor::class)
         ->middleware(

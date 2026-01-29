@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\ProcessorMappingSeeder;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -26,6 +25,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Development User',
             'email' => 'dev@example.com',
             'password' => Hash::make('password'),
+            'is_admin' => true,
         ]);
     }
 }

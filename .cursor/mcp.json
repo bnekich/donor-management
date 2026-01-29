@@ -6,6 +6,15 @@
                 "artisan",
                 "boost:mcp"
             ]
+        },
+        "herd": {
+            "command": "php",
+            "args": [
+                "C:/Users/bneki/.config/herd/bin/herd-mcp.phar"
+            ],
+            "env": {
+                "SITE_PATH": "C:\\source\\donor-management"
+            }
         }
     }
 }

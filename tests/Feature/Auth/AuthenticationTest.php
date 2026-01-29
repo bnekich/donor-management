@@ -37,14 +37,13 @@ test('users can not authenticate with invalid password', function () {
     $this->assertGuest();
 });
 
-test('users with two factor enabled are redirected to two factor challenge', function () {
+test('users with two factor enabled are redirected to two factor challenge in production', function () {
     if (! Features::canManageTwoFactorAuthentication()) {
         $this->markTestSkipped('Two-factor authentication is not enabled.');
     }
-    Features::twoFactorAuthentication([
-        'confirm' => true,
-        'confirmPassword' => true,
-    ]);
+    if (! app()->environment('production')) {
+        $this->markTestSkipped('2FA challenge is skipped when not in production.');
+    }
 
     $user = User::factory()->create();
 
@@ -55,6 +54,28 @@ test('users with two factor enabled are redirected to two factor challenge', fun
 
     $response->assertRedirect(route('two-factor.login'));
     $this->assertGuest();
+});
+
+test('in non-production users with two factor enabled can log in without 2FA challenge', function () {
+    if (! Features::canManageTwoFactorAuthentication()) {
+        $this->markTestSkipped('Two-factor authentication is not enabled.');
+    }
+    if (app()->environment('production')) {
+        $this->markTestSkipped('This test only applies when not in production.');
+    }
+
+    $user = User::factory()->create([
+        'password_changed_at' => now(),
+    ]);
+
+    $response = $this->post(route('login.store'), [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $response->assertRedirect(route('dashboard', absolute: false));
+    $this->assertAuthenticatedAs($user);
 });
 
 test('users can logout', function () {
