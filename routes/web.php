@@ -10,7 +10,6 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\TwoFactor;
 use App\Livewire\Users;
 use Illuminate\Support\Facades\Route;
-use Laravel\Fortify\Features;
 
 Route::get('/', function () {
     if (auth()->guest()) {
@@ -61,14 +60,5 @@ Route::middleware(['auth', 'password.change.required', 'two-factor.required'])->
         Route::get('users/{user}/edit', Users\Edit::class)->name('users.edit');
     });
 
-    Route::get('settings/two-factor', TwoFactor::class)
-        ->middleware(
-            when(
-                Features::canManageTwoFactorAuthentication()
-                    && Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword'),
-                ['password.confirm'],
-                [],
-            ),
-        )
-        ->name('two-factor.show');
+    Route::get('settings/two-factor', TwoFactor::class)->name('two-factor.show');
 });

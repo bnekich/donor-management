@@ -21,6 +21,12 @@ class TwoFactor extends Component
     #[Locked]
     public bool $requiresConfirmation;
 
+    /**
+     * True when the user was redirected here by RequireTwoFactor (production, 2FA not yet confirmed).
+     */
+    #[Locked]
+    public bool $mustCompleteSetupToContinue = false;
+
     #[Locked]
     public string $qrCodeSvg = '';
 
@@ -47,6 +53,9 @@ class TwoFactor extends Component
 
         $this->twoFactorEnabled = auth()->user()->hasEnabledTwoFactorAuthentication();
         $this->requiresConfirmation = Features::optionEnabled(Features::twoFactorAuthentication(), 'confirm');
+        $this->mustCompleteSetupToContinue = app()->environment('production')
+            && is_null(auth()->user()->two_factor_confirmed_at)
+            && ! $this->twoFactorEnabled;
     }
 
     /**
@@ -110,6 +119,7 @@ class TwoFactor extends Component
         $this->closeModal();
 
         $this->twoFactorEnabled = true;
+        $this->mustCompleteSetupToContinue = false;
     }
 
     /**

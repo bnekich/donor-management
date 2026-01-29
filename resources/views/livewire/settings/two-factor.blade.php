@@ -6,6 +6,11 @@
         :subheading="__('Manage your two-factor authentication settings')"
     >
         <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
+            @if ($mustCompleteSetupToContinue)
+                <flux:callout variant="warning" icon="shield-exclamation">
+                    {{ __('You must complete 2FA setup to continue.') }}
+                </flux:callout>
+            @endif
             @if ($twoFactorEnabled)
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
