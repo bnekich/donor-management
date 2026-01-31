@@ -3,6 +3,7 @@
 use App\Livewire\Campaigns;
 use App\Livewire\Donations;
 use App\Livewire\Donors;
+use App\Livewire\GivebutterSync;
 use App\Livewire\ProcessorMappings;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -49,6 +50,7 @@ Route::middleware(['auth', 'password.change.required', 'two-factor.required'])->
     Route::get('campaigns/create', Campaigns\Create::class)->name('campaigns.create');
     Route::get('campaigns/{campaign}/edit', Campaigns\Edit::class)->name('campaigns.edit');
 
+    Route::get('givebutter-sync', GivebutterSync\Index::class)->name('givebutter-sync.index');
     Route::get('processor-mappings', ProcessorMappings\Index::class)->name('processor-mappings.index');
     Route::get('processor-mappings/create', ProcessorMappings\Create::class)->name('processor-mappings.create');
     Route::get('processor-mappings/{processorMapping}/edit', ProcessorMappings\Edit::class)->name('processor-mappings.edit');

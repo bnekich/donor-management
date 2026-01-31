@@ -21,6 +21,8 @@
                     :current="request()->routeIs('campaigns.*')" wire:navigate>{{ __('Campaigns') }}</flux:navlist.item>
                 <flux:navlist.item icon="currency-dollar" :href="route('donations.index')"
                     :current="request()->routeIs('donations.*')" wire:navigate>{{ __('Donations') }}</flux:navlist.item>
+                <flux:navlist.item icon="arrow-down-tray" :href="route('givebutter-sync.index')"
+                    :current="request()->routeIs('givebutter-sync.*')" wire:navigate>{{ __('Givebutter Sync') }}</flux:navlist.item>
                 @can('manageUsers')
                     <flux:navlist.item icon="users" :href="route('users.index')"
                         :current="request()->routeIs('users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
