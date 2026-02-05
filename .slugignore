@@ -1,0 +1,41 @@
+# Exclude test files from deployment
+tests/
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+
+# Exclude development documentation
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+# Exclude development tools
+.cursor/
+.github/
+.editorconfig
+.gitattributes
+.gitignore
+.nvmrc
+
+# Exclude Postman collections
+*_postman_collection.json
+
+# Exclude IDE files
+.fleet/
+.idea/
+.vscode/
+.zed/
+.phpactor.json
+
+# Exclude build artifacts (if not already excluded)
+node_modules/
+public/build/
+public/hot/
+
+# Exclude environment files
+.env.example
+.env.backup
+.env.production
+
+# Exclude storage symlink (should be handled by server)
+public/storage
